@@ -1,7 +1,11 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+
+import boto3
+import json
+
 from utils.get_token import BOT_TOKEN
-from utils.get_inflation import handler
+
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -13,7 +17,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         requested_period = context.args[0]
-        inflation_rate = handler(requested_period)
+        
+        client = boto3.client('lambda', region_name='us-west-2')
+        
+        response = client.invoke(
+            FunctionName='inflation-test',  # TODO: IaC function in ENV
+            InvocationType='RequestResponse',
+            Payload=json.dumps({'date': requested_period})
+        )
+
+        inflation_rate = json.loads(response['Payload'].read())['inflation_rate']
+
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=inflation_rate
