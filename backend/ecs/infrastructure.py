@@ -3,13 +3,19 @@ from aws_cdk import (
     aws_iam as iam,
     aws_ec2 as ec2,
     aws_ecs as ecs,
-    aws_lambda as _lambda
+    aws_lambda as _lambda,
+    aws_dynamodb as ddb
 )
 
 
 class ECS(Construct):
 
-    def __init__(self, scope: Construct, construct_id: str, downstream: _lambda.IFunction, **kwargs) -> None:
+    def __init__(self,
+                 scope: Construct,
+                 construct_id: str,
+                 downstream: _lambda.IFunction, 
+                 table: ddb.ITable,
+                 **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         role = iam.Role(
@@ -55,7 +61,8 @@ class ECS(Construct):
             image=image,
             logging=ecs.AwsLogDriver(stream_prefix='ArgentinaDatosContainer'),
             environment={
-                'LAMBDA_INFLATION': downstream.function_name
+                'LAMBDA_INFLATION': downstream.function_name,
+                'DYNAMODB_FEEDBACK': table.table_name
             }
         )
         
@@ -65,3 +72,5 @@ class ECS(Construct):
             task_definition=task_definition,
             desired_count=1
         )
+
+        table.grant_read_write_data(service.task_definition.task_role)
