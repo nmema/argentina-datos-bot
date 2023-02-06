@@ -1,7 +1,8 @@
 from constructs import Construct
 from aws_cdk import (
     Stack,
-    aws_lambda as _lambda
+    aws_lambda as _lambda,
+    aws_dynamodb as ddb
 )
 
 from backend.ecs.infrastructure import ECS
@@ -19,7 +20,14 @@ class Backend(Stack):
             handler='inflation.lambda_handler'
         )
 
+        feedback_table = ddb.Table(
+            self, 'argcd-feedback',
+            partition_key={'name': 'user_id', 'type': ddb.AttributeType.NUMBER},
+            sort_key={'name': 'chat_date', 'type': ddb.AttributeType.STRING}
+        )
+
         ecs = ECS(
             self, 'ArgentinaConDatosECS',
-            downstream=inflation_lambda  # TODO: How to handle with multiple lambdas
+            downstream=inflation_lambda,  # TODO: How to handle with multiple lambdas
+            table = feedback_table
         )

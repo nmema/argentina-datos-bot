@@ -67,7 +67,7 @@ async def save_feedback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     try:
         client = boto3.client('dynamodb', region_name='us-west-2')
         client.put_item(
-            TableName='argcd-feedback-test',  # TODO: environment variable
+            TableName=os.environ['DYNAMODB_FEEDBACK'],
             Item={
                 'user_id': {'N': str(user_id)},
                 'chat_date': {'S': chat_date},
