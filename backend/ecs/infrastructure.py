@@ -2,13 +2,14 @@ from constructs import Construct
 from aws_cdk import (
     aws_iam as iam,
     aws_ec2 as ec2,
-    aws_ecs as ecs
+    aws_ecs as ecs,
+    aws_lambda as _lambda
 )
 
 
 class ECS(Construct):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, downstream: _lambda.IFunction, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         role = iam.Role(
@@ -18,7 +19,10 @@ class ECS(Construct):
         
         role.add_to_policy(
             iam.PolicyStatement(
-                actions=['secretsmanager:GetSecretValue'],
+                actions=[
+                    'secretsmanager:GetSecretValue',
+                    'lambda:InvokeFunction'
+                ],
                 resources=['*']
             )
         )
@@ -49,7 +53,10 @@ class ECS(Construct):
         container = task_definition.add_container(
             'telegram-bot',
             image=image,
-            logging=ecs.AwsLogDriver(stream_prefix='ArgentinaDatosContainer')
+            logging=ecs.AwsLogDriver(stream_prefix='ArgentinaDatosContainer'),
+            environment={
+                'LAMBDA_INFLATION': downstream.function_name
+            }
         )
         
         service = ecs.FargateService(

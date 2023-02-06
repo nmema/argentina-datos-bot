@@ -3,9 +3,9 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
 import boto3
 import json
+import os
 
 from utils.get_token import BOT_TOKEN
-
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -21,7 +21,7 @@ async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
         client = boto3.client('lambda', region_name='us-west-2')
         
         response = client.invoke(
-            FunctionName='inflation-test',  # TODO: IaC function in ENV
+            FunctionName=os.environ['LAMBDA_INFLATION'],
             InvocationType='RequestResponse',
             Payload=json.dumps({'date': requested_period})
         )
