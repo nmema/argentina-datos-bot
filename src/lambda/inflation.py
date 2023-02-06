@@ -20,4 +20,4 @@ def lambda_handler(event, context):
     response = http.request('GET', request_url)
     data = json.loads(response.data)
     inflation = data['data']  # output -> [[ date, inflation ]]
-    return f'{inflation[0][1]:.02%}'
+    return {'inflation_rate': f'{inflation[0][1]:.02%}'}
