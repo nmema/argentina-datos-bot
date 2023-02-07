@@ -25,4 +25,4 @@ Para eliminar los recursos de la cuenta.
 cdk destroy
 ```
 
-Proyecto realizado como trabajo final para la diplomatura [ITBA Cloud Architecture](https://innovacion.itba.edu.ar/educacion-ejecutiva/tic/cloud-architecture/). Para conocer sobre la arquitectura del proyecto, haz click [aquí](https://github.com/nmema/aws-solutions-architect-project/tree/13-readme-explanation/backend#readme)
+Proyecto realizado como trabajo final para la diplomatura [ITBA Cloud Architecture](https://innovacion.itba.edu.ar/educacion-ejecutiva/tic/cloud-architecture/). Para conocer sobre la arquitectura del proyecto, haz click [aquí](https://github.com/nmema/aws-solutions-architect-project/tree/main/backend#readme)
