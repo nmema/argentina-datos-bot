@@ -33,10 +33,10 @@ class ECS(Construct):
             )
         )
 
-        # TODO: make new construct & in separete module.
+        # https://docs.amazonaws.cn/en_us/vpc/latest/userguide/nat-gateway-scenarios.html
         vpc = ec2.Vpc(
             self, 'argentina-con-datos-vpc',
-            max_azs=3
+            max_azs=1
         )
 
         ecs_cluster = ecs.Cluster(
