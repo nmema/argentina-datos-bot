@@ -1,6 +1,7 @@
 from constructs import Construct
 from aws_cdk import (
     Stack,
+    Duration,
     aws_lambda as _lambda,
     aws_dynamodb as ddb
 )
@@ -20,6 +21,14 @@ class Backend(Stack):
             handler='inflation.lambda_handler'
         )
 
+        change_rates_lambda = _lambda.Function(
+            self, 'argcd-change-rates',
+            runtime=_lambda.Runtime.PYTHON_3_8,
+            code=_lambda.Code.from_asset('src/lambda'),
+            handler='change_rates.lambda_handler',
+            timeout=Duration.seconds(10)
+        )
+
         feedback_table = ddb.Table(
             self, 'argcd-feedback',
             partition_key={'name': 'user_id', 'type': ddb.AttributeType.NUMBER},
@@ -28,6 +37,7 @@ class Backend(Stack):
 
         ecs = ECS(
             self, 'ArgentinaConDatosECS',
-            downstream=inflation_lambda,  # TODO: How to handle with multiple lambdas
+            lambda_inf=inflation_lambda,  # TODO: How to handle with multiple lambdas
+            lambda_chr=change_rates_lambda,
             table = feedback_table
         )

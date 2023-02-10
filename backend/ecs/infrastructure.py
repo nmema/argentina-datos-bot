@@ -13,7 +13,8 @@ class ECS(Construct):
     def __init__(self,
                  scope: Construct,
                  construct_id: str,
-                 downstream: _lambda.IFunction, 
+                 lambda_inf: _lambda.IFunction,
+                 lambda_chr: _lambda.IFunction,
                  table: ddb.ITable,
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -61,7 +62,8 @@ class ECS(Construct):
             image=image,
             logging=ecs.AwsLogDriver(stream_prefix='ArgentinaDatosContainer'),
             environment={
-                'LAMBDA_INFLATION': downstream.function_name,
+                'LAMBDA_INFLATION': lambda_inf.function_name,
+                'LAMBDA_CHANGE_RATES': lambda_chr.function_name,
                 'DYNAMODB_FEEDBACK': table.table_name
             }
         )

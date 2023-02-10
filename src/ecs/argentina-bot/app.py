@@ -14,7 +14,6 @@ import json
 import os
 
 from utils.get_token import BOT_TOKEN
-from utils.rates import lambda_handler
 
 
 FEEDBACK = 0
@@ -53,7 +52,16 @@ async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def change_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         requested_period = context.args[0]
-        change_rates = lambda_handler(requested_period)['change_rates']
+
+        client = boto3.client('lambda', region_name='us-west-2')
+        
+        response = client.invoke(
+            FunctionName=os.environ['LAMBDA_CHANGE_RATES'],
+            InvocationType='RequestResponse',
+            Payload=json.dumps({'date': requested_period})
+        )
+
+        change_rates = json.loads(response['Payload'].read())['change_rates']
         
         if len(change_rates) == 0:
             await context.bot.send_message(

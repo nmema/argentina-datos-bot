@@ -10,7 +10,8 @@ TIPO_DE_CAMBIO = {
     'MAE': '168.1_T_CAMBIMAE_D_0_0_15'
 }
 
-def lambda_handler(date):
+def lambda_handler(event, context):
+    date = event['date']
     ids = ','.join(TIPO_DE_CAMBIO.values())
     request_url = f'{API_BASE_URL}?start_date={date}&end_date={date}&ids={ids}'
     
