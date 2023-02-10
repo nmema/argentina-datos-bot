@@ -10,10 +10,10 @@ from telegram.ext import (
 
 import boto3
 import datetime
-import json
 import os
 
 from utils.get_token import BOT_TOKEN
+from utils.lambda_invoke import get_data
 
 
 FEEDBACK = 0
@@ -27,16 +27,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         requested_period = context.args[0]
-        
-        client = boto3.client('lambda', region_name='us-west-2')
-        
-        response = client.invoke(
-            FunctionName=os.environ['LAMBDA_INFLATION'],
-            InvocationType='RequestResponse',
-            Payload=json.dumps({'date': requested_period})
-        )
 
-        inflation_rate = json.loads(response['Payload'].read())['inflation_rate']
+        data = get_data(
+            lambda_name='LAMBDA_INFLATION',
+            payload={'date': requested_period}
+        )
+        inflation_rate = data['inflation_rate']
 
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -53,15 +49,11 @@ async def change_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         requested_period = context.args[0]
 
-        client = boto3.client('lambda', region_name='us-west-2')
-        
-        response = client.invoke(
-            FunctionName=os.environ['LAMBDA_CHANGE_RATES'],
-            InvocationType='RequestResponse',
-            Payload=json.dumps({'date': requested_period})
+        data = get_data(
+            lambda_name='LAMBDA_CHANGE_RATES',
+            payload={'date': requested_period}
         )
-
-        change_rates = json.loads(response['Payload'].read())['change_rates']
+        change_rates = data['change_rates']
         
         if len(change_rates) == 0:
             await context.bot.send_message(
@@ -140,7 +132,7 @@ if __name__ == '__main__':
     inflation_handler = CommandHandler('inflacion', inflation)
     application.add_handler(inflation_handler)
     
-    change_rates_handler = CommandHandler('tipodecambio', change_rates)
+    change_rates_handler = CommandHandler('tiposdecambio', change_rates)
     application.add_handler(change_rates_handler)
     
     feedback_handler = ConversationHandler(
