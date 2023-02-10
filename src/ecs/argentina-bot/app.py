@@ -49,6 +49,42 @@ async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text='Algo salió mal \U0001F61E por favor intente de nuevo.'
         )
 
+async def change_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        requested_period = context.args[0]
+
+        client = boto3.client('lambda', region_name='us-west-2')
+        
+        response = client.invoke(
+            FunctionName=os.environ['LAMBDA_CHANGE_RATES'],
+            InvocationType='RequestResponse',
+            Payload=json.dumps({'date': requested_period})
+        )
+
+        change_rates = json.loads(response['Payload'].read())['change_rates']
+        
+        if len(change_rates) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text='No hay información para el período solicitado.'
+            )
+        else:
+            message = ''
+            for k, v in change_rates.items():
+                change_rate_string = f'{k:5} : $ {v:.2f}\n'
+                message += change_rate_string
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f'```\n{message}```',
+                parse_mode='markdown'
+            )
+
+    except:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='Algo salió mal \U0001F61E por favor intente de nuevo.'
+        )
+
 async def feedback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
         "Este Bot se encuentra en desarrollo!\n\n"
@@ -103,6 +139,9 @@ if __name__ == '__main__':
     
     inflation_handler = CommandHandler('inflacion', inflation)
     application.add_handler(inflation_handler)
+    
+    change_rates_handler = CommandHandler('tipodecambio', change_rates)
+    application.add_handler(change_rates_handler)
     
     feedback_handler = ConversationHandler(
         entry_points=[CommandHandler('comentario', feedback)],
