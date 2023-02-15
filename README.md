@@ -1,7 +1,7 @@
-# AWS Solutions Architect Project
+# Argentina con Datos Bot
 
 ## Introducción
-En [Datos Argentina](https://datos.gob.ar/) se encuentran datasets con todo tipo de información de la Argentina. Puede que para acceder a ellas requieran varios pasos y debamos descargar mayor información de la necesaria. Por eso se desarrolló @ArgentinaDatosBot, un bot de Telegram al cuál podes realizarles consultas especificas y te responderá en cuestión de segundos!
+En [Datos Argentina](https://datos.gob.ar/) se encuentran datasets con todo tipo de información de la Argentina. Puede que para acceder a ellas requieran varios pasos y debamos descargar mayor información de la necesaria. Por eso se desarrolló @ArgentinaDatosBot, un **bot de Telegram** al cuál podes realizarles consultas especificas y te responderá en cuestión de segundos!
 
 Para charlar con él:
 - desde la [web](https://web.telegram.org/k/#@ArgentinaDatosBot)
@@ -44,11 +44,11 @@ ECS fue desplegado en una red privada mediante un Nat Gateway en una red públic
 El Bot inicializa tomando por [Secrets Manager](https://github.com/nmema/argentina-datos-bot/blob/main/src/ecs/argentina-bot/utils/get_token.py#L9-L11) el token de acceso a la API de Telegram. Una vez finalizado, espera por los siguientes comandos:
 - comando `/inflacion`, hace la llamada a la función lambda [inflation](https://github.com/nmema/argentina-datos-bot/blob/main/src/lambda/inflation.py).
 - comando `/tiposdecambio`, hace la llamada a la función lambda [change_rates](https://github.com/nmema/argentina-datos-bot/blob/main/src/lambda/change_rates.py).
-- comando `/emae`, hace la llamada a la función lambda [emae](https://github.com/nmema/argentina-datos-bot/blob/main/src/lambda/emae.py)
+- comando `/emae`, hace la llamada a la función lambda [emae](https://github.com/nmema/argentina-datos-bot/blob/main/src/lambda/emae.py).
 - comando `/comentario`, hace la [llamada](https://github.com/nmema/argentina-datos-bot/blob/main/src/ecs/argentina-bot/app.py#L133-L141) a la tabla de dynamodb para insertar los valores.
 
 ## ToDo
-- Unit Testing
+- Unit Testing.
 - Definir un ELB delante del ECS y un ASG.
 
 --------------
