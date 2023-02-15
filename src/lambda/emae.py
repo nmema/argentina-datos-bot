@@ -15,8 +15,7 @@ def lambda_handler(event, context):
     date = event['date']
     ids = ','.join(TIPO_DE_EMAE.values())
     request_url = f'{API_BASE_URL}?start_date={date}&end_date={date}&ids={ids}'
-    print(request_url)
-    
+
     http = urllib3.PoolManager()
     response = http.request('GET', request_url)
     data = json.loads(response.data)['data']  # output -> [[ date, emae ]]
@@ -24,6 +23,5 @@ def lambda_handler(event, context):
         emae_dict = {}
     else:
         emae_list = [0.0 if emae is None else emae for emae in data[0][1:]]
-        print(emae_list)
         emae_dict = dict(zip(TIPO_DE_EMAE.keys(), emae_list))
     return {'emae': emae_dict}

@@ -19,9 +19,16 @@ from utils.lambda_invoke import get_data
 FEEDBACK = 0
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = 'Bienvenido a Argentina con Datos!'
+    text = """
+¡Bienvenido al bot Argentina con Datos!\n
+Un acercamiento de la información hacia las personas, realizando consultas a [Datos Argentina](https://www.datos.gob.ar/)\n
+    """
+    
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text='Bienvenido a Argentina con Datos!'
+        text=text,
+        parse_mode='markdown'
     )
 
 async def inflation(update: Update, context: ContextTypes.DEFAULT_TYPE):
