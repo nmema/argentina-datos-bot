@@ -77,6 +77,36 @@ async def change_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text='Algo salió mal \U0001F61E por favor intente de nuevo.'
         )
 
+async def emae(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        requested_period = context.args[0]
+        
+        data = get_data(
+            lambda_name='LAMBDA_EMAE',
+            payload={'date': requested_period}
+        )
+
+        emae_info = data['emae']
+
+        if len(emae_info) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text='No hay información para el período solicitado.'
+            )
+        else:
+            message = ''
+            for k, v in emae_info.items():
+                change_rate_string = f'{k:18} : {v:.3f}\n'
+                message += change_rate_string
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f'```\n{message}```',
+                parse_mode='markdown'
+            )
+        
+    except:
+        pass
+
 async def feedback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
         "Este Bot se encuentra en desarrollo!\n\n"
@@ -134,6 +164,9 @@ if __name__ == '__main__':
     
     change_rates_handler = CommandHandler('tiposdecambio', change_rates)
     application.add_handler(change_rates_handler)
+    
+    emae_handler = CommandHandler('emae', emae)
+    application.add_handler(emae_handler)
     
     feedback_handler = ConversationHandler(
         entry_points=[CommandHandler('comentario', feedback)],
