@@ -15,6 +15,7 @@ class ECS(Construct):
                  construct_id: str,
                  lambda_inf: _lambda.IFunction,
                  lambda_chr: _lambda.IFunction,
+                 lambda_ema: _lambda.IFunction,
                  table: ddb.ITable,
                  **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -64,10 +65,11 @@ class ECS(Construct):
             environment={
                 'LAMBDA_INFLATION': lambda_inf.function_name,
                 'LAMBDA_CHANGE_RATES': lambda_chr.function_name,
+                'LAMBDA_EMAE': lambda_ema.function_name,
                 'DYNAMODB_FEEDBACK': table.table_name
             }
         )
-        
+
         service = ecs.FargateService(
             self, 'argentina-con-datos-service',
             cluster=ecs_cluster,

@@ -14,7 +14,6 @@ import os
 
 from utils.get_token import BOT_TOKEN
 from utils.lambda_invoke import get_data
-from utils.emae import lambda_handler
 
 
 FEEDBACK = 0
@@ -82,10 +81,13 @@ async def emae(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         requested_period = context.args[0]
         
-        data = lambda_handler(requested_period)
-        
+        data = get_data(
+            lambda_name='LAMBDA_EMAE',
+            payload={'date': requested_period}
+        )
+
         emae_info = data['emae']
-        
+
         if len(emae_info) == 0:
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,

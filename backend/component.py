@@ -29,6 +29,14 @@ class Backend(Stack):
             timeout=Duration.seconds(10)
         )
 
+        emae_lambda = _lambda.Function(
+            self, 'argcd-emae',
+            runtime=_lambda.Runtime.PYTHON_3_8,
+            code=_lambda.Code.from_asset('src/lambda'),
+            handler='emae.lambda_handler',
+            timeout=Duration.seconds(10)
+        )
+
         feedback_table = ddb.Table(
             self, 'argcd-feedback',
             partition_key={'name': 'user_id', 'type': ddb.AttributeType.NUMBER},
@@ -39,5 +47,6 @@ class Backend(Stack):
             self, 'ArgentinaConDatosECS',
             lambda_inf=inflation_lambda,  # TODO: How to handle with multiple lambdas
             lambda_chr=change_rates_lambda,
+            lambda_ema=emae_lambda,
             table = feedback_table
         )

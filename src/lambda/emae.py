@@ -11,7 +11,8 @@ TIPO_DE_EMAE = {
     'Var % interanual': '143.3_ICE_SERVIA_2004_A_25'
 }
 
-def lambda_handler(date):
+def lambda_handler(event, context):
+    date = event['date']
     ids = ','.join(TIPO_DE_EMAE.values())
     request_url = f'{API_BASE_URL}?start_date={date}&end_date={date}&ids={ids}'
     print(request_url)
